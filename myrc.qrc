@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/qss">
+        <file>myqss.qss</file>
+    </qresource>
+    <qresource prefix="/imgs">
+        <file>imgs/gtk-media-next-rtl.png</file>
+        <file>imgs/gtk-media-next-ltr.png</file>
+        <file>imgs/gtk-media-pause.png</file>
+        <file>imgs/gtk-media-play-ltr.png</file>
+        <file>imgs/user-login.png</file>
+        <file>imgs/close_window.png</file>
+        <file>imgs/minimize_window.png</file>
+        <file>imgs/icon_menu-circle_alt2.png</file>
+        <file>imgs/ic_music_thumb.png</file>
+        <file>imgs/temp.jpeg</file>
+    </qresource>
+    <qresource prefix="/fonts">
+        <file>fonts/Monaco.ttf</file>
+    </qresource>
+</RCC>

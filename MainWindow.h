@@ -5,8 +5,9 @@
 
 class QPushButton;
 class QLabel;
-class QProgressBar;
-class QTimer;
+class QSlider;
+class PlayListDlg;
+class LrcDisplay;
 
 class MainWindow : public QWidget
 {
@@ -15,6 +16,11 @@ public:
     explicit MainWindow(QWidget *parent = 0);
 
     void initMainWindow();
+    QPushButton *m_btnPlayPause;
+
+protected:
+    void mousePressEvent(QMouseEvent *);
+    void mouseMoveEvent(QMouseEvent *);
 
 signals:
 
@@ -24,7 +30,8 @@ public slots:
     void onClickBtnNext();
 
     void setMetaData();
-    void setProgressValue();
+    void setSliderValue(qint64);
+    void showPlayListDlg();
 
 private:
     QPushButton *m_btnLoginStatus;
@@ -37,15 +44,23 @@ private:
     QLabel *m_labelLrcArea;
 
     QPushButton *m_btnPre;
-    QPushButton *m_btnPlayPause;
+
     QPushButton *m_btnNext;
 
     QLabel *m_labelPlayTime;
-    QProgressBar *m_proPlay;
+    QSlider *m_sliderProPlay;
+    QLabel *m_labelDuration;
 
     QPushButton *m_btnPlayList;
 
-    QTimer *m_timer;
+    PlayListDlg *m_playListDlg;
+
+    QPushButton *m_btnMinWindow;
+    QPushButton *m_btnCloseWindow;
+
+    QPoint dragPosition;
+
+    LrcDisplay *m_lrcDisplay;
 };
 
 #endif // MAINWINDOW_H

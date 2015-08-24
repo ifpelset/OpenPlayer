@@ -150,10 +150,7 @@ BOOL GetPicInfo(FILE *fp, int &dwFrame, int Len, int &tempi)
 
 void GetPicRGB(FILE *fp, int dwFrame, int tempi)
 {
-    TCHAR lpTempPathBuffer[MAX_PATH];
     TCHAR szTempFileName[MAX_PATH];
-    DWORD dwRetVal=0;
-    UINT uRetVal=0;
     BYTE  *pPicData;
     unsigned char * bmpDataBuffer=NULL;
 
