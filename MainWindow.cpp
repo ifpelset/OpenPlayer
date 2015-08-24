@@ -3,6 +3,7 @@
 #include "MyPlayList.h"
 #include "PlayListDlg.h"
 #include "LrcDisplay.h"
+#include "libs/getalbumpicture.h" // Use a lib from csdn.
 #include <QPushButton>
 #include <QLabel>
 #include <QSlider>
@@ -230,6 +231,7 @@ void MainWindow::setMetaData()
     // 获取了该音频文件的时间信息之后，立马设置slider的最大值
     m_sliderProPlay->setMaximum(player->metaData(QMediaMetaData::Duration).toInt());
 
+    // 歌词部分
     QMediaPlaylist *playlist = MyPlayList::getInstance();
     QMediaContent curMedia = playlist->currentMedia();
     QString audioFileName = curMedia.canonicalUrl().toLocalFile();
@@ -241,6 +243,15 @@ void MainWindow::setMetaData()
     }
     else
         m_lrcDisplay->setLrcFile(lrcFileName);
+
+    // 获取专辑图片
+    char *ret = getAlbumPicture(audioFileName);
+    if (ret == NULL)
+        return ;
+
+    QPixmap pix;
+    pix.loadFromData(QByteArray::fromRawData(ret, 100000));
+    m_labelAlbumPic->setPixmap(pix.scaled(200, 200));
 }
 
 void MainWindow::setSliderValue(qint64 currentInfo)

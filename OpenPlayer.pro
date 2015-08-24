@@ -14,7 +14,8 @@ HEADERS += \
     MyPlayer.h \
     MyPlayList.h \
     PlayListDlg.h \
-    LrcDisplay.h
+    LrcDisplay.h \
+    libs/getalbumpicture.h
 
 RESOURCES += \
     myrc.qrc
