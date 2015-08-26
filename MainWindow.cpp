@@ -4,6 +4,7 @@
 #include "PlayListDlg.h"
 #include "LrcDisplay.h"
 #include "libs/getalbumpicture.h" // Use a lib from csdn.
+#include "LoginDlg.h"
 #include <QPushButton>
 #include <QLabel>
 #include <QSlider>
@@ -17,12 +18,18 @@
 #include <QTime>
 #include <QMouseEvent>
 #include <QMessageBox>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent, Qt::FramelessWindowHint), m_lrcDisplay(NULL)
 {
     initMainWindow();
 
     QMediaPlayer *player = MyPlayer::getInstance();
+
     connect(player, SIGNAL(metaDataChanged()), this, SLOT(setMetaData()));
     connect(player, SIGNAL(positionChanged(qint64)), this, SLOT(setSliderValue(qint64)));
 }
@@ -50,6 +57,8 @@ void MainWindow::initMainWindow()
     m_btnLoginStatus->setIconSize(QSize(40, 40));
     m_btnLoginStatus->setToolTip("登录");
     m_btnLoginStatus->setObjectName("btnLoginStatus");
+
+    connect(m_btnLoginStatus, SIGNAL(clicked(bool)), this, SLOT(showLoginDlg()));
 
     m_btnMinWindow->setIcon(QIcon(":/imgs/imgs/minimize_window.png"));
     m_btnMinWindow->setIconSize(QSize(20, 20));
@@ -83,7 +92,6 @@ void MainWindow::initMainWindow()
     m_labelLrcArea->setWordWrap(true); // 373, 190
     m_labelLrcArea->setAlignment(Qt::AlignTop);
 
-    m_labelAlbumPic->setPixmap(QPixmap("C:/Users/IFPELSET/Desktop/getAlbumPicture/temp.jpeg").scaled(200, 200));
     m_labelAlbumPic->setStyleSheet("border: 7px solid rgba(40,44,48,0.2);");
 
     lytCenterRightVBox->addWidget(m_labelSongName);
@@ -160,6 +168,54 @@ void MainWindow::initMainWindow()
     setMaximumSize(600, 360);
     m_playListDlg = new PlayListDlg(this);
     m_playListDlg->hide();
+
+    m_isOnline = false;
+}
+
+void MainWindow::setArrAudioInfo(QByteArray arrAudioInfo)
+{
+    m_arrAudioInfo = arrAudioInfo;
+}
+
+void MainWindow::setIsOnline(bool isOnline)
+{
+    if (isOnline) {
+        m_btnPre->setEnabled(false);
+    } else {
+        m_btnPre->setEnabled(true);
+    }
+    m_isOnline = isOnline;
+}
+
+void MainWindow::refreshAudio()
+{
+    QMediaPlayer *player = MyPlayer::getInstance();
+    QMediaPlaylist *playList = MyPlayList::getInstance();
+    QJsonObject object = QJsonDocument::fromJson(m_arrAudioInfo).object();
+    if (object.value("song").isArray()) {
+        QJsonArray array = object.value("song").toArray();
+
+        QJsonObject value = array.at(0).toObject();
+        QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+        QNetworkRequest req;
+        req.setUrl(QUrl(value.value("picture").toString()));
+        manager->get(req);
+        connect(manager, &QNetworkAccessManager::finished, [&](QNetworkReply *reply){
+            QPixmap pix;
+            QByteArray data = reply->readAll();
+            pix.loadFromData(data);
+            m_labelAlbumPic->setPixmap(pix.scaled(200, 200));
+        });
+        m_labelSongName->setText(value.value("title").toString());
+        m_labelSingerName->setText("<b>歌手:</b>" + value.value("artist").toString());
+        m_labelAlbumName->setText("<b>专辑:</b>" + value.value("albumtitle").toString());
+        playList->addMedia(QUrl(value.value("url").toString()));
+        playList->setCurrentIndex(playList->mediaCount() - 1);
+        player->play();
+
+        m_btnPlayPause->setIcon(QIcon(":/imgs/imgs/gtk-media-pause.png"));
+        m_btnPlayPause->setToolTip("暂停");
+    }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *ev)
@@ -197,6 +253,8 @@ void MainWindow::onClickBtnPlayPause()
         m_btnPlayPause->setToolTip("播放");
         player->pause();
     }
+
+    m_lrcDisplay->pauseAndRecoverLrcMask(m_timerIntervel);
 }
 
 void MainWindow::onClickBtnPre()
@@ -211,6 +269,14 @@ void MainWindow::onClickBtnPre()
 
 void MainWindow::onClickBtnNext()
 {
+    if (m_isOnline) {
+        m_dlgLogin->setAudioInfo();
+        QMediaPlaylist *playList = MyPlayList::getInstance();
+        playList->removeMedia(playList->mediaCount() - 1);
+        refreshAudio();
+
+        return ;
+    }
     QMediaPlaylist *playlist = MyPlayList::getInstance();
     if (playlist->nextIndex() == playlist->mediaCount()
             || playlist->nextIndex() == -1) {
@@ -222,17 +288,30 @@ void MainWindow::onClickBtnNext()
 
 void MainWindow::setMetaData()
 {
+    if (m_isOnline) {
+        m_lrcDisplay->setLrcFile("不存在.lrc");
+        m_labelLrcArea->setText("暂无歌词");
+        QJsonObject object = QJsonDocument::fromJson(m_arrAudioInfo).object();
+        if (object.value("song").isArray()) {
+            QJsonArray array = object.value("song").toArray();
+            QJsonObject value = array.at(0).toObject();
+            m_sliderProPlay->setMaximum(value.value("length").toInt()*1000);
+        }
+
+        return ;
+    }
+
     QMediaPlayer *player = MyPlayer::getInstance();
+    QMediaPlaylist *playlist = MyPlayList::getInstance();
 
     m_labelSongName->setText(player->metaData(QMediaMetaData::Title).toString());
-    m_labelSingerName->setText("<b>歌手:</b>" + player->metaData(QMediaMetaData::Author).toString());
-    m_labelAlbumName->setText("<b>专辑:</b>" + player->metaData(QMediaMetaData::AlbumTitle).toString());
+    m_labelSingerName->setText("<b>歌手: </b>" + player->metaData(QMediaMetaData::Author).toString());
+    m_labelAlbumName->setText("<b>专辑: </b>" + player->metaData(QMediaMetaData::AlbumTitle).toString());
 
     // 获取了该音频文件的时间信息之后，立马设置slider的最大值
     m_sliderProPlay->setMaximum(player->metaData(QMediaMetaData::Duration).toInt());
 
-    // 歌词部分
-    QMediaPlaylist *playlist = MyPlayList::getInstance();
+    // 歌词部分  
     QMediaContent curMedia = playlist->currentMedia();
     QString audioFileName = curMedia.canonicalUrl().toLocalFile();
     QString lrcFileName = audioFileName.left(audioFileName.indexOf(".")) + ".lrc";
@@ -245,21 +324,37 @@ void MainWindow::setMetaData()
         m_lrcDisplay->setLrcFile(lrcFileName);
 
     // 获取专辑图片
-    char *ret = getAlbumPicture(audioFileName);
-    if (ret == NULL)
+    char *retPic = getAlbumPicture(audioFileName);
+    if (retPic == NULL)
         return ;
 
     QPixmap pix;
-    pix.loadFromData(QByteArray::fromRawData(ret, 100000));
+    pix.loadFromData(QByteArray(retPic, 100000));
     m_labelAlbumPic->setPixmap(pix.scaled(200, 200));
+    delete []retPic;
 }
 
 void MainWindow::setSliderValue(qint64 currentInfo)
 {
     QMediaPlayer *player = MyPlayer::getInstance();
-    qint64 duration = player->metaData(QMediaMetaData::Duration).toInt();
-    QString tStr;
+    QMediaPlaylist *playlist = MyPlayList::getInstance();
+    qint64 duration;
+    if (m_isOnline) {
+        QJsonObject object = QJsonDocument::fromJson(m_arrAudioInfo).object();
+        if (object.value("song").isArray()) {
+            QJsonArray array = object.value("song").toArray();
+            QJsonObject value = array.at(0).toObject();
+            duration = value.value("length").toInt()*1000;
+        }
 
+        if (m_sliderProPlay->value() == m_sliderProPlay->maximum()) {
+            playlist->removeMedia(playlist->mediaCount() - 1);
+            refreshAudio();
+        }
+    } else {
+        duration = player->metaData(QMediaMetaData::Duration).toInt();
+    }
+    QString tStr;
     m_sliderProPlay->setValue(currentInfo);
     currentInfo /= 1000;
     duration /= 1000;
@@ -295,7 +390,8 @@ void MainWindow::setSliderValue(qint64 currentInfo)
         QString currentLrc = mapLrc.value(previous);
         if (currentLrc != m_labelLrcArea->text()) {
             qint64 intervalTime = later - previous;
-            m_lrcDisplay->startLrcMask(intervalTime * 1000 + 2000);
+            m_timerIntervel = intervalTime * 1000 + 2000;
+            m_lrcDisplay->startLrcMask(m_timerIntervel);
 
             tStr = mapLrc.value(currentInfo);
             if (!tStr.isNull()) {
@@ -311,5 +407,12 @@ void MainWindow::showPlayListDlg()
         m_playListDlg->show();
     else
         m_playListDlg->hide();
+}
+
+void MainWindow::showLoginDlg()
+{
+    m_dlgLogin = new LoginDlg(this);
+    m_dlgLogin->exec();
+    refreshAudio();
 }
 

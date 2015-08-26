@@ -17,6 +17,7 @@ public:
     QMap<int, QString> getMapLrc();
 
     void startLrcMask(qint64 intervalTime);
+    void pauseAndRecoverLrcMask(qint64 intervalTime);
     void stopLrcMask();
 
 signals:

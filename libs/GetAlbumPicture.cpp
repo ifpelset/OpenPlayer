@@ -179,7 +179,7 @@ char *getPicRGB(QFile *pFile, int dwFrame, int tempi)
             pFile->read((char *)pPicData, dwFrame-tempi);
             pFile->close();
 
-            pFile->setFileName("D:/temp.jpeg");
+            pFile->setFileName("temp.jpeg");
             if (!pFile->open(QIODevice::WriteOnly)) {
                 qDebug() << "Can not open file";
                 return NULL;

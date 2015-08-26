@@ -13,7 +13,8 @@ LrcDisplay::LrcDisplay(const QString &fileName, QWidget *parent) : QLabel(parent
     initLrc(fileName);
 
     setWindowFlags(Qt::SubWindow | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    resize(800, 60);
+    //resize(800, 60);
+    setGeometry(500, 20, 800, 60);
     setAttribute(Qt::WA_TranslucentBackground);
     setCursor(Qt::OpenHandCursor);
 
@@ -52,8 +53,10 @@ void LrcDisplay::timeout()
 void LrcDisplay::initLrc(const QString &fileName)
 {
     QFile file(fileName);
-    if (!file.open(QFile::ReadOnly))
+    if (!file.open(QFile::ReadOnly)) {
+        setText("暂无歌词");
         return ;
+    }
 
     QTextStream stream(&file);
     while (!stream.atEnd()) {
@@ -130,6 +133,19 @@ void LrcDisplay::startLrcMask(qint64 intervalTime)
     lrcMaskWidthInterval = 800 / count;
     lrcMaskWidth = 0;
     timer->start(30);
+}
+
+void LrcDisplay::pauseAndRecoverLrcMask(qint64 intervalTime)
+{
+    if (timer->isActive()) {
+        timer->stop();
+    } else {
+        //此处设置没30毫秒刷新下遮罩宽度，更新太快会增加CPU负担，太慢则动画效果不流畅！
+        qreal count = intervalTime / 30;
+        //获取每次遮罩需要增加的宽度，此处的800为部件的固定宽度！
+        lrcMaskWidthInterval = 800 / count;
+        timer->start(30);
+    }
 }
 
 void LrcDisplay::stopLrcMask()

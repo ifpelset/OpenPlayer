@@ -13,6 +13,7 @@
         <file>imgs/icon_menu-circle_alt2.png</file>
         <file>imgs/ic_music_thumb.png</file>
         <file>imgs/temp.jpeg</file>
+        <file>imgs/welcomeAlbumPic.png</file>
     </qresource>
     <qresource prefix="/fonts">
         <file>fonts/Monaco.ttf</file>

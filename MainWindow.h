@@ -8,6 +8,7 @@ class QLabel;
 class QSlider;
 class PlayListDlg;
 class LrcDisplay;
+class LoginDlg;
 
 class MainWindow : public QWidget
 {
@@ -16,6 +17,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
 
     void initMainWindow();
+    void setArrAudioInfo(QByteArray arrAudioInfo);
+    void setIsOnline(bool isOnline);
+    void refreshAudio();
     QPushButton *m_btnPlayPause;
 
 protected:
@@ -32,6 +36,7 @@ public slots:
     void setMetaData();
     void setSliderValue(qint64);
     void showPlayListDlg();
+    void showLoginDlg();
 
 private:
     QPushButton *m_btnLoginStatus;
@@ -61,6 +66,14 @@ private:
     QPoint dragPosition;
 
     LrcDisplay *m_lrcDisplay;
+
+    LoginDlg *m_dlgLogin;
+
+    QByteArray m_arrAudioInfo;
+
+    int m_timerIntervel;
+    bool m_isOnline;
+
 };
 
 #endif // MAINWINDOW_H

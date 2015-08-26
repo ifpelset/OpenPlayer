@@ -70,6 +70,7 @@ void PlayListDlg::playSelectAudio(QModelIndex idx)
     playList->setCurrentIndex(idx.row());
     MyPlayer::getInstance()->play();
     ((MainWindow *)parent())->m_btnPlayPause->setIcon(QIcon(":/imgs/imgs/gtk-media-pause.png"));
+    ((MainWindow *)parent())->setIsOnline(false);
 }
 
 void PlayListDlg::triggerAddAudio()

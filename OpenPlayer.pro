@@ -5,9 +5,12 @@ SOURCES += \
     MyPlayList.cpp \
     libs/GetAlbumPicture.cpp \
     PlayListDlg.cpp \
-    LrcDisplay.cpp
+    LrcDisplay.cpp \
+    LoginDlg.cpp
 
 QT += widgets gui multimedia
+
+CONFIG += C++11
 
 HEADERS += \
     MainWindow.h \
@@ -15,7 +18,8 @@ HEADERS += \
     MyPlayList.h \
     PlayListDlg.h \
     LrcDisplay.h \
-    libs/getalbumpicture.h
+    libs/getalbumpicture.h \
+    LoginDlg.h
 
 RESOURCES += \
     myrc.qrc

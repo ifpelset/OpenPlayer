@@ -13,7 +13,6 @@ int main(int argc, char *argv[])
     QFile qssFile(QObject::tr(":/qss/myqss.qss"));
     qssFile.open(QFile::ReadOnly);
     QByteArray byteArray = qssFile.readAll() ;
-    qDebug() << byteArray;
     app.setStyleSheet(byteArray);
     qssFile.close();
 

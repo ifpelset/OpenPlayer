@@ -2,8 +2,9 @@
 	This file have defined the style of OpenPlayer.
 */
 MainWindow{
-	/*background-color: #453E34;*/
-	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(18,18,15, 0.5), stop:1 rgba(120,205,248, 0.5));
+	/*border-image: url(:/imgs/imgs/temp.jpeg);*/
+	background-color: #453E34;
+	/*background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(18,18,15, 0.5), stop:1 rgba(120,205,248, 0.5));*/
 }
 
 QPushButton#btnLoginStatus {
