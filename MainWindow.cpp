@@ -24,7 +24,8 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
-MainWindow::MainWindow(QWidget *parent) : QWidget(parent, Qt::FramelessWindowHint), m_lrcDisplay(NULL)
+MainWindow::MainWindow(QWidget *parent) :
+    QWidget(parent, Qt::FramelessWindowHint), m_lrcDisplay(NULL)
 {
     initMainWindow();
 
@@ -103,13 +104,10 @@ void MainWindow::initMainWindow()
     lytCenterRightVBox->addSpacing(35);
 
     lytCenterHBox->addStretch(2);
-//    lytCenterHBox->addSpacing(40);
     lytCenterHBox->addWidget(m_labelAlbumPic);
     lytCenterHBox->addStretch(1);
-//    lytCenterHBox->addSpacing(20);
     lytCenterHBox->addLayout(lytCenterRightVBox);
     lytCenterHBox->addStretch(2);
-//    lytCenterHBox->addSpacing(40);
 
     m_btnPre = new QPushButton(this);
     m_btnPlayPause = new QPushButton(this);
@@ -292,7 +290,7 @@ void MainWindow::setMetaData()
         m_lrcDisplay->setLrcFile("不存在.lrc");
         m_labelLrcArea->setText("暂无歌词");
         QJsonObject object = QJsonDocument::fromJson(m_arrAudioInfo).object();
-        if (object.value("song").isArray()) {
+        if (!object.isEmpty() && object.value("song").isArray()) {
             QJsonArray array = object.value("song").toArray();
             QJsonObject value = array.at(0).toObject();
             m_sliderProPlay->setMaximum(value.value("length").toInt()*1000);

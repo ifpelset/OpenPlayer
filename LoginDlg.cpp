@@ -65,7 +65,7 @@ void LoginDlg::setAudioInfo()
     songArray.append("version=100&");
     songArray.append(QString("user_id=%1&").arg(m_userID));
     songArray.append(QString("token=%1&").arg(m_token));
-    songArray.append(QString("expire=%4&").arg(m_expire));
+    songArray.append(QString("expire=%1&").arg(m_expire));
     songArray.append("type=n&");
     songArray.append("channel=1&");
     QUrl url = "http://www.douban.com/j/app/radio/people?" + QString(songArray);

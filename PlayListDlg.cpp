@@ -21,7 +21,6 @@ PlayListDlg::PlayListDlg(QWidget *parent)/* :
     resize(140, 320);
     setParent(parent);
     setGeometry(600-160, 20, 160, 290);
-    //setStyleSheet("background-color: rgba(160,160,161,0.3);");
 
     QHBoxLayout *bx = new QHBoxLayout(this);
     QMediaPlaylist *playList = MyPlayList::getInstance();

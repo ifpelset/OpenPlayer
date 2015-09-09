@@ -15,7 +15,4 @@
         <file>imgs/temp.jpeg</file>
         <file>imgs/welcomeAlbumPic.png</file>
     </qresource>
-    <qresource prefix="/fonts">
-        <file>fonts/Monaco.ttf</file>
-    </qresource>
 </RCC>

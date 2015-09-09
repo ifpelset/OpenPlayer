@@ -180,16 +180,16 @@ void LrcDisplay::paintEvent(QPaintEvent *)
     painter.setFont(font);
 
     //先绘制底层文字，作为阴影，这样会使显示效果更加清晰，且更有质感！
-    painter.setPen(QColor(0,0,0,200));
-    painter.drawText(1,1,800,60,Qt::AlignLeft,text());
+    painter.setPen(QColor(0, 0, 0, 200));
+    painter.drawText(1, 1, 800, 60, Qt::AlignLeft, text());
 
     //再在上面绘制渐变文字~！
     painter.setPen(QPen(linearGradient,0));
-    painter.drawText(0,0,800,60,Qt::AlignLeft,text());
+    painter.drawText(0, 0, 800, 60, Qt::AlignLeft, text());
 
     //设置歌词遮罩~！
-    painter.setPen(QPen(maskLinearGradient,0));
-    painter.drawText(0,0,lrcMaskWidth,60,Qt::AlignLeft,text());
+    painter.setPen(QPen(maskLinearGradient, 0));
+    painter.drawText(0, 0, lrcMaskWidth, 60, Qt::AlignLeft, text());
 }
 
 void LrcDisplay::showLrc(const int time)
