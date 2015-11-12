@@ -3,3 +3,17 @@
 
 # Screenshot
 
+## Main Window
+![](./PrePic/主界面.png)
+
+## Play List
+![](./PrePic/主界面+播放列表.png)
+
+## Play List Context Menu
+![](./PrePic/播放列表右键.png)
+
+## Login Dou Ban
+![](./PrePic/登录到豆瓣fm.png)
+
+## Play Dou Ban FM Music
+![](./PrePic/豆瓣fm-华语频道.png)
